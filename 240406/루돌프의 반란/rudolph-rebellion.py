@@ -114,19 +114,23 @@ for t in range(1, m+1):
                 moveDir = dir
 
         if moveDir != -1:
-            nx = pos[i][0]+dx[moveDir]
-            ny = pos[i][1]+dy[moveDir]
-            # 산타의 이동으로 루돌프와 충돌한 경우
+            nx = pos[i][0] + dx[moveDir]
+            ny = pos[i][1] + dy[moveDir]
+
+            # 산타의 이동으로 충돌한 경우, 산타를 이동시키고 처리를 합니다.
             if nx == rudolf[0] and ny == rudolf[1]:
                 stun[i] = t + 1
+
                 moveX = -dx[moveDir]
                 moveY = -dy[moveDir]
+
                 firstX = nx + moveX * d
                 firstY = ny + moveY * d
                 lastX, lastY = firstX, firstY
 
                 if d == 1:
-                    points += 1
+                    points[i] += d
+
                 else:
                     while is_inrange(lastX, lastY) and board[lastX][lastY] > 0:
                         lastX += moveX
