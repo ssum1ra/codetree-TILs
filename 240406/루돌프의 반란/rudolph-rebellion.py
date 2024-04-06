@@ -23,7 +23,7 @@ for _ in range(p):
 
 for t in range(1, m+1):
     # 살아있는 산타 중 가장 루돌프에 가장 가까운 산타 찾기
-    closestX, closestY, closestIdx = 10000, 10000, 0
+    closestX, closestY, closestIdx = 2*n, 2*n, 0
 
     for i in range(1, p + 1):
         if not is_live[i]:
