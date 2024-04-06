@@ -67,7 +67,7 @@ for t in range(1, m+1):
             lastX += moveX
             lastY += moveY
 
-        while not (firstX == lastX and firstY == lastY):
+        while not (lastX == firstX and lastY == firstY):
             beforeX = lastX - moveX
             beforeY = lastY - moveY
 
