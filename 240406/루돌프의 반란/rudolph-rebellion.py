@@ -38,19 +38,21 @@ for t in range(1, m+1):
 
     # 가장 가까운 산타의 방향으로 루돌프 이동
     if closestIdx:
-        prev_rudolf = rudolf
+        prevRudolf = rudolf
         moveX = 0
         if closestX > rudolf[0]:
             moveX = 1
         elif closestX < rudolf[0]:
             moveX = -1
+
         moveY = 0
         if closestY > rudolf[1]:
             moveY = 1
         elif closestY < rudolf[1]:
             moveY = -1
-        rudolf = (rudolf[0]+moveX, rudolf[1]+moveY)
-        board[prev_rudolf[0]][prev_rudolf[1]] = 0
+
+        rudolf = (rudolf[0] + moveX, rudolf[1] + moveY)
+        board[prevRudolf[0]][prevRudolf[1]] = 0
 
     # 루돌프의 이동으로 산타와 충돌한 경우
     if rudolf[0] == closestX and rudolf[1] == closestY:
