@@ -1,15 +1,14 @@
-# (x, y)가 보드 내의 좌표인지 확인하는 함수입니다.
 def is_inrange(x, y):
-    return 1 <= x and x <= n and 1 <= y and y <= n
+    return 0 < x <= n and 0 < y <= n
 
 n, m, p, c, d = map(int, input().split())
 rudolf = tuple(map(int, input().split()))
 
-points = [0 for _ in range(p + 1)]
-pos = [(0, 0) for _ in range(p + 1)]
-board = [[0 for _ in range(n + 1)] for _ in range(n + 1)]
-is_live = [False for _ in range(p + 1)]
-stun = [0 for _ in range(p + 1)]
+board = [[0] * (n+1) for _ in range(n+1)]
+pos = [(0,0) for _ in range(p+1)]
+points = [0] * (p+1)
+is_live = [False] * (p+1)
+stun = [0] * (p+1)
 
 dx = [-1, 0, 1, 0]
 dy = [0, 1, 0, -1]
@@ -17,35 +16,33 @@ dy = [0, 1, 0, -1]
 board[rudolf[0]][rudolf[1]] = -1
 
 for _ in range(p):
-    id, x, y = tuple(map(int, input().split()))
-    pos[id] = (x, y)
-    board[pos[id][0]][pos[id][1]] = id
-    is_live[id] = True
+    i, x, y = map(int, input().split())
+    pos[i] = (x, y)
+    board[x][y] = i
+    is_live[i] = True
 
-for t in range(1, m + 1):
-    closestX, closestY, closestIdx = 10000, 10000, 0
-
-    # 살아있는 포인트 중 루돌프에 가장 가까운 산타를 찾습니다.
-    for i in range(1, p + 1):
+for t in range(1, m+1):
+    # 살아있는 산타 중 가장 루돌프에 가장 가까운 산타 찾기
+    closestIdx = 0
+    closestX, closestY = 2*n, 2*n
+    for i in range(1, p+1):
         if not is_live[i]:
             continue
-
-        currentBest = ((closestX - rudolf[0]) ** 2 + (closestY - rudolf[1]) ** 2, (-closestX, -closestY))
-        currentValue = ((pos[i][0] - rudolf[0]) ** 2 + (pos[i][1] - rudolf[1]) ** 2, (-pos[i][0], -pos[i][1]))
-
-        if currentValue < currentBest:
-            closestX, closestY = pos[i]
+        min_dist = ((closestX - rudolf[0])**2 + (closestY - rudolf[1]) ** 2, (-closestX, -closestY))
+        dist = ((pos[i][0] - rudolf[0])**2 + (pos[i][1] - rudolf[1])**2, (-pos[i][0], -pos[i][1]))
+        if min_dist > dist:
             closestIdx = i
+            closestX, closestY = pos[i]
 
-    # 가장 가까운 산타의 방향으로 루돌프가 이동합니다.
+
+    # 가장 가까운 산타의 방향으로 루돌프 이동
     if closestIdx:
-        prevRudolf = rudolf
+        prev_rudolf = rudolf
         moveX = 0
         if closestX > rudolf[0]:
             moveX = 1
         elif closestX < rudolf[0]:
             moveX = -1
-            
         moveY = 0
         if closestY > rudolf[1]:
             moveY = 1
@@ -67,7 +64,7 @@ for t in range(1, m + 1):
             lastX += moveX
             lastY += moveY
 
-        while not (lastX == firstX and lastY == firstY):
+        while not (firstX == lastX and firstY == lastY):
             beforeX = lastX - moveX
             beforeY = lastY - moveY
 
