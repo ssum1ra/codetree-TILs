@@ -25,15 +25,16 @@ for t in range(1, m+1):
     # 살아있는 산타 중 가장 루돌프에 가장 가까운 산타 찾기
     closestX, closestY, closestIdx = 10000, 10000, 0
 
-    for i in range(1, p+1):
+    for i in range(1, p + 1):
         if not is_live[i]:
             continue
-        min_dist = ((closestX - rudolf[0])**2 + (closestY - rudolf[1]) ** 2, (-closestX, -closestY))
-        dist = ((pos[i][0] - rudolf[0])**2 + (pos[i][1] - rudolf[1])**2, (-pos[i][0], -pos[i][1]))
-        if min_dist > dist:
-            closestIdx = i
-            closestX, closestY = pos[i]
 
+        currentBest = ((closestX - rudolf[0]) ** 2 + (closestY - rudolf[1]) ** 2, (-closestX, -closestY))
+        currentValue = ((pos[i][0] - rudolf[0]) ** 2 + (pos[i][1] - rudolf[1]) ** 2, (-pos[i][0], -pos[i][1]))
+
+        if currentValue < currentBest:
+            closestX, closestY = pos[i]
+            closestIdx = i
 
     # 가장 가까운 산타의 방향으로 루돌프 이동
     if closestIdx:
