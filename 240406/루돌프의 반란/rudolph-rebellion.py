@@ -97,25 +97,30 @@ for t in range(1, m+1):
     for i in range(1, p+1):
         if not is_live[i] or stun[i] >= t:
             continue
-        min_dist = (pos[i][0] - rudolf[0]) ** 2 + (pos[i][1] - rudolf[1]) ** 2
-        move_dir = -1
-        for j in range(4):
-            nx = pos[i][0]+dx[j]
-            ny = pos[i][1]+dy[j]
+
+        minDist = (pos[i][0] - rudolf[0])**2 + (pos[i][1] - rudolf[1])**2
+        moveDir = -1
+
+        for dir in range(4):
+            nx = pos[i][0] + dx[dir]
+            ny = pos[i][1] + dy[dir]
+
             if not is_inrange(nx, ny) or board[nx][ny] > 0:
                 continue
-            dist = (nx-rudolf[0]) ** 2 + (ny-rudolf[1]) ** 2
-            if dist < min_dist:
-                min_dist = dist
-                move_dir = j
-        if move_dir != -1:
-            nx = pos[i][0]+dx[move_dir]
-            ny = pos[i][1]+dy[move_dir]
+
+            dist = (nx - rudolf[0])**2 + (ny - rudolf[1])**2
+            if dist < minDist:
+                minDist = dist
+                moveDir = dir
+
+        if moveDir != -1:
+            nx = pos[i][0]+dx[moveDir]
+            ny = pos[i][1]+dy[moveDir]
             # 산타의 이동으로 루돌프와 충돌한 경우
             if nx == rudolf[0] and ny == rudolf[1]:
                 stun[i] = t + 1
-                moveX = -dx[move_dir]
-                moveY = -dy[move_dir]
+                moveX = -dx[moveDir]
+                moveY = -dy[moveDir]
                 firstX = nx + moveX * d
                 firstY = ny + moveY * d
                 lastX, lastY = firstX, firstY
