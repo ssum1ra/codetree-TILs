@@ -90,7 +90,8 @@ for t in range(1, m+1):
             board[firstX][firstY] = closestIdx
         else:
             is_live[closestIdx] = False
-    board[rudolf[0]][rudolf[1]] = -1
+
+    board[rudolf[0]][rudolf[1]] = -1;
 
     # 루돌프와 가장 가까운 방향으로 산타 이동
     for i in range(1, p+1):
