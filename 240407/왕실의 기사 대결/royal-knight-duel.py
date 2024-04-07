@@ -1,98 +1,83 @@
-def is_inrange(r, c, h, w):
-    for i in range(h):
-        for j in range(w):
-            if not (0 < r + i <= l and 0 < c + j <= l):
-                return False
-    return True
+from collections import deque
 
-def move(i, d):
-    r, c = pos[i][0], pos[i][1]
-    nr, nc = r+dx[d], c+dy[d]
-    h, w = shield[i][0], shield[i][1]
-
-    if not is_inrange(nr, nc, h, w):
-        return False
-
-    for x in range(h):
-        for y in range(w):
-            if board[nr + x][nc + y] == 2:
-                return False
-            elif board[nr + x][nc + y] < 0 and board[nr + x][nc + y] != -i:
-                ni = -board[nr + x][nc + y]
-                if not move(ni, d):
-                    return False
-
-    pos[i] = (nr, nc)
-    is_changed[i] = True
-
-    for x in range(h):
-        for y in range(w):
-                board[r + x][c + y] = 0
-
-    for x in range(h):
-        for y in range(w):
-            board[nr + x][nc + y] = -i
-
-    return True
-
-def check_trap(i):
-    r, c, h, w = pos[i][0], pos[i][1], shield[i][0], shield[i][1]
-    cnt = 0
-    for i in range(h):
-        for j in range(w):
-            if (r+i, c+j) in trap:
-                cnt += 1
-    return cnt
-
-l, n, q = map(int, input().split())
-board = [[2] * (l+2)] + [[2] + list(map(int, input().split())) + [2] for _ in range(l)] + [[2] * (l+2)]
-pos = [(0, 0)] * (n+1)
-shield = [(0, 0)] * (n+1)
-hp = [0] * (n+1)
-trap = []
-is_changed = [False] * (n+1)
-
+MAX_N = 31
+MAX_L = 41
 dx = [-1, 0, 1, 0]
 dy = [0, 1, 0, -1]
 
-for i in range(l+2):
-    for j in range(l+2):
-        if board[i][j] == 1:
-            trap.append((i,j))
-            board[i][j] = 0
+info = [[0] * MAX_L for _ in range(MAX_L)]
+bef_k = [0] * MAX_N
+r = [0] * MAX_N
+c = [0] * MAX_N
+h = [0] * MAX_N
+w = [0] * MAX_N
+k = [0] * MAX_N
+nr = [0] * MAX_N
+nc = [0] * MAX_N
+dmg = [0] * MAX_N
+is_moved = [False] * MAX_N
 
-for i in range(1, n+1):
-    r, c, h, w, k = map(int, input().split())
-    pos[i] = (r, c)
-    shield[i] = (h, w)
-    hp[i] = k
+def try_movement(idx, dir):
+        q = deque()
 
-    for x in range(h):
-        for y in range(w):
-            board[r+x][c+y] = -i
+        for i in range(1, n+1):
+            dmg[i] = 0
+            is_moved[i] = False
+            nr[i] = r[i]
+            nc[i] = c[i]
 
-start_hp = hp[:]
+        q.append(idx)
+        is_moved[idx] = True
+
+        while q:
+            x = q.popleft()
+            
+            nr[x] += dx[dir]
+            nc[x] += dy[dir]
+
+            if nr[x] < 1 or nc[x] < 1 or nr[x] + h[x] - 1 > l or nc[x] + w[x] - 1 > l:
+                return False
+
+            for i in range(nr[x], nr[x] + h[x]):
+                for j in range(nc[x], nc[x] + w[x]):
+                    if info[i][j] == 1:
+                        dmg[x] += 1
+                    if info[i][j] == 2:
+                        return False
+
+            for i in range(1, n+1):
+                if is_moved[i] or k[i] <= 0:
+                    continue
+                if r[i] > nr[x] + h[x] - 1 or nr[x] > r[i] + h[i] - 1:
+                    continue
+                if c[i] > nc[x] + w[x] - 1 or nc[x] > c[i] + w[i] - 1:
+                    continue
+                is_moved[i] = True
+                q.append(i)
+
+        dmg[idx] = 0
+        return True
+
+def move_piece(idx, move_dir):
+    if k[idx] <= 0:
+        return
+
+    if try_movement(idx, move_dir):
+        for i in range(1, n+1):
+            r[i] = nr[i]
+            c[i] = nc[i]
+            k[i] -= dmg[i]
+
+l, n, q = map(int, input().split())
+for i in range(1, l + 1):
+    info[i][1:] = map(int, input().split())
+for i in range(1, n + 1):
+    r[i], c[i], h[i], w[i], k[i] = map(int, input().split())
+    bef_k[i] = k[i]
 
 for _ in range(q):
-    i, d = map(int, input().split())
-    r, c, h, w = pos[i][0], pos[i][1], shield[i][0], shield[i][1]
+    idx, d = map(int, input().split())
+    move_piece(idx, d)
 
-    if hp[i] != 0:
-        if move(i, d):
-            for t in range(1, n+1):
-                if hp[t] > 0 and i != t and is_changed[t]:
-                    cnt = check_trap(t)
-                    hp[t] -= cnt
-                    is_changed[t] = False
-
-    for t in range(1, n+1):
-        if hp[t] == 0:
-            for x in range(shield[t][0]):
-                for y in range(shield[t][1]):
-                    board[pos[t][0]+x][pos[t][1]+y] = 0
-
-res = 0
-for i in range(1, n+1):
-    if hp[i] != 0:
-        res += start_hp[i] - hp[i]
+res = sum(bef_k[i] - k[i] for i in range(1, n+1) if k[i] > 0)
 print(res)
