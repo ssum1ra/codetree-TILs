@@ -61,7 +61,7 @@ for i in range(l+2):
             trap.append((i,j))
             board[i][j] = 0
 
-for i in range(1, q+1):
+for i in range(1, n+1):
     r, c, h, w, k = map(int, input().split())
     pos[i] = (r, c)
     shield[i] = (h, w)
