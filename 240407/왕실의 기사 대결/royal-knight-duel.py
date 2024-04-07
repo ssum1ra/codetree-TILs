@@ -46,7 +46,7 @@ def try_movement(idx, dir):
                         return False
 
             for i in range(1, n+1):
-                if is_moved[i] or k[i] <= 0:
+                if k[i] <= 0:
                     continue
                 if r[i] > nr[x] + h[x] - 1 or nr[x] > r[i] + h[i] - 1:
                     continue
