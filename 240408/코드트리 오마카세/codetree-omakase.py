@@ -1,3 +1,6 @@
+import sys
+sys.stdin = open('input.txt', 'r')
+
 class Query:
     def __init__(self, cmd, t, x, name, n):
         self.cmd = cmd
@@ -64,14 +67,14 @@ for name in names:
 queries.sort(key = lambda q: (q.t, q.cmd))
 
 people_num, sushi_num = 0, 0
-for i in range(len(queries)):
-    if queries[i].cmd == 100:
+for q in queries:
+    if q.cmd == 100:
         sushi_num += 1
-    elif queries[i].cmd == 111:
+    elif q.cmd == 111:
         sushi_num -= 1
-    elif queries[i].cmd == 200:
+    elif q.cmd == 200:
         people_num += 1
-    elif queries[i].cmd == 222:
+    elif q.cmd == 222:
         people_num -= 1
     else:
         print(people_num, sushi_num)
