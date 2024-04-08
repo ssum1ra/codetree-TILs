@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('input.txt', 'r')
-
 class Query:
     def __init__(self, cmd, t, x, name, n):
         self.cmd = cmd
