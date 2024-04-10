@@ -75,13 +75,16 @@ def laser_attack():
 
         cx = back_x[ex][ey]
         cy = back_y[ex][ey]
+
         while not (cx == sx and cy == sy):
             board[cx][cy] -= power//2
-            if board[cx][cy] == 0:
+            if board[cx][cy] < 0:
                 board[cx][cy] = 0
             is_active[cx][cy] = True
+
             next_cx = back_x[cx][cy]
             next_cy = back_y[cx][cy]
+
             cx = next_cx
             cy = next_cy
 
@@ -101,6 +104,7 @@ def bomb_attack():
 
         if sx == nx and sy == ny:
             continue
+
         if ex == nx and ey == ny:
             board[nx][ny] -= power
             if board[nx][ny] < 0:
@@ -131,8 +135,8 @@ back_x = [[0] * m for _ in range(n)]
 back_y = [[0] * m for _ in range(n)]
 dx1 = [0, 1, 0, -1]
 dy1 = [1, 0, -1, 0]
-dx2 = [-1, -1, 0, 1, 1, 1, 0, -1]
-dy2 = [0, 1, 1, 1, 0, -1, -1, -1]
+dx2 = [0, -1, -1, 0, 1, 1, 1, 0, -1]
+dy2 = [0, 0, 1, 1, 1, 0, -1, -1, -1]
 
 for t in range(1, k+1):
     live_turret = []
@@ -141,7 +145,8 @@ for t in range(1, k+1):
             if board[i][j]:
                 new_turret = Turrent(i, j, rec[i][j], board[i][j])
                 live_turret.append(new_turret)
-    if len(live_turret) == 1:
+
+    if len(live_turret) <= 1:
         break
 
     init()
