@@ -15,12 +15,10 @@ dy = [0, 1, 0, -1]
 board = [list(map(int, input().split())) for _ in range(n)]
 
 def is_player(i):
-    o_idx = -1
     for p_i in range(m):
         if p_i != i and p_pos[p_i] == p_pos[i]:
-            o_idx = p_i
-            return o_idx
-    return o_idx
+            return p_i
+    return -1
 
 for i in range(n):
     for j in range(n):
@@ -95,7 +93,7 @@ for _ in range(k):
                 loser = i
 
             # 이긴 플레이어의 경우
-            score[winner] = abs((gun_power1 + stat[i]) - (gun_power2 + stat[o_idx]))
+            score[winner] += abs((gun_power1 + stat[i]) - (gun_power2 + stat[o_idx]))
 
             for g in range(len(gun_pos)):
                 if p_pos[winner] == gun_pos[g]:
