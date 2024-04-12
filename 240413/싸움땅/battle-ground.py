@@ -57,14 +57,16 @@ def move(p, pos):
     p = (num, nx, ny, d, s, a)
     update(p)
 
-def lose_move(p):
+def loser_move(p):
     num, x, y, d, s, a = p
+
     gun[x][y].append(a)
+
     for i in range(4):
         ndir = (d + i) % 4
-        nx, ny = x + dxs[d], y + dys[d]
+        nx, ny = x + dxs[ndir], y + dys[ndir]
         if in_range(nx, ny) and find_player((nx, ny)) == (-1, -1, -1, -1, -1, -1):
-            p = (num, nx, ny, d, s, 0)
+            p = (num, x, y, ndir, s, 0)
             move(p, (nx, ny))
             break
 
@@ -74,12 +76,12 @@ def duel(p1, p2, pos):
 
     if (s1 + a1, s1) > (s2 + a2, s2):
         points[num1] += (s1 + a1) - (s2 + a2)
-        lose_move(p2)
+        loser_move(p2)
         move(p1, pos)
 
     else:
         points[num2] += (s2 + a2) - (s1 + a1)
-        lose_move(p1)
+        loser_move(p1)
         move(p2, pos)
 
 
