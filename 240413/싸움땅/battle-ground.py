@@ -1,136 +1,107 @@
 n, m, k = map(int, input().split())
 
-p_pos = [(0, 0)] * m
-dir = [0] * m
-stat = [0] * m
-
-gun_pos = []
-gun_power = []
-p_gun = [-1] * m
-score = [0] * m
-
-dx = [-1, 0, 1, 0]
-dy = [0, 1, 0, -1]
-
-board = [list(map(int, input().split())) for _ in range(n)]
-
-def is_player(i):
-    for p_i in range(m):
-        if p_i != i and p_pos[p_i] == p_pos[i]:
-            return p_i
-    return -1
-
+gun = [
+    [[] for _ in range(n)]
+    for _ in range(n)
+]
 for i in range(n):
+    nums = list(map(int, input().split()))
     for j in range(n):
-        if board[i][j]:
-            gun_pos.append((i, j))
-            gun_power.append(board[i][j])
-            board[i][j] = 0
+        if nums[j] != 0:
+            gun[i][j].append(nums[j])
 
+players = []
 for i in range(m):
-    x, y, d, s = map(int, input().split())
-    p_pos[i] = (x - 1, y - 1)
-    dir[i] = d
-    stat[i] = s
+    x, y, d, s = tuple(map(int, input().split()))
+    players.append((i, x-1, y-1, d, s, 0))
+
+dxs = [-1, 0, 1, 0]
+dys = [0, 1, 0, -1]
+
+points = [0] * m
+
+def in_range(x, y):
+    return 0 <= x < n and 0 <= y < n
+
+def get_next(x, y, d):
+    nx, ny = x + dxs[d], y + dys[d]
+    if not in_range(nx, ny):
+        d = (d + 2) if d < 2 else (d - 2)
+        nx, ny = x + dxs[d], y + dys[d]
+    return (nx, ny, d)
+
+def find_player(pos):
+    for i in range(m):
+        _, x, y, _, _, _ = players[i]
+        if pos == (x, y):
+            return players[i]
+    return (-1, -1, -1, -1, -1, -1)
+
+def update(p):
+    num_i, _, _, _, _, _ = p
+
+    for i in range(m):
+        if num_i == i:
+            players[i] = p
+            break
+
+def move(p, pos):
+    num, x, y, d, s, a = p
+    nx, ny = pos
+
+    gun[nx][ny].append(a)
+    gun[nx][ny].sort(reverse=True)
+    a = gun[nx][ny][0]
+    gun[nx][ny].pop(0)
+
+    p = (num, nx, ny, d, s, a)
+    update(p)
+
+def lose_move(p):
+    num, x, y, d, s, a = p
+    gun[x][y].append(a)
+    for i in range(4):
+        ndir = (d + i) % 4
+        nx, ny = x + dxs[d], y + dys[d]
+        if in_range(nx, ny) and find_player((nx, ny)) == (-1, -1, -1, -1, -1, -1):
+            p = (num, nx, ny, d, s, 0)
+            move(p, (nx, ny))
+            break
+
+def duel(p1, p2, pos):
+    num1, _, _, d1, s1, a1 = p1
+    num2, _, _, d2, s2, a2 = p2
+
+    if (s1 + a1, s1) > (s2 + a2, s2):
+        points[num1] += (s1 + a1) - (s2 + a2)
+        lose_move(p2)
+        move(p1, pos)
+
+    else:
+        points[num2] += (s2 + a2) - (s1 + a1)
+        lose_move(p1)
+        move(p2, pos)
+
+
+def simulate():
+    for i in range(m):
+        num, x, y, d, s, a = players[i]
+
+        nx, ny, ndir = get_next(x, y, d)
+
+        next_player = find_player((nx, ny))
+
+        curr_player = (num, nx, ny, ndir, s, a)
+        update(curr_player)
+
+        if next_player == (-1, -1, -1, -1, -1, -1):
+            move(curr_player, (nx, ny))
+        else:
+            duel(curr_player, next_player, (nx, ny))
+
 
 for _ in range(k):
-    for i in range(m):
-        # 플레이어 이동
-        p_d = dir[i]
-        nx, ny = p_pos[i][0] + dx[p_d], p_pos[i][1] + dy[p_d]
-        if not (0 <= nx < n):
-            n_d = 2 - p_d
-            dir[i] = n_d
-            nx = p_pos[i][0] + dx[n_d]
-        elif not (0 <= ny < n):
-            n_d = 4 - p_d
-            dir[i] = n_d
-            ny = p_pos[i][1] + dy[n_d]
-        p_pos[i] = (nx, ny)
-        # 총이 있다면 함께 이동
-        if p_gun[i] != -1:
-            gun_pos[p_gun[i]] = (nx, ny)
+    simulate()
 
-        # 이동한 칸에 플레이어가 있는지
-        o_idx = is_player(i)
-
-        # 플레이어 x 총 o
-        if o_idx == -1:
-            for g in range(len(gun_pos)):
-                if p_pos[i] == gun_pos[g]:
-                    if p_gun[i] == -1:
-                        gun_p = 0
-                    else:
-                        gun_p = gun_power[p_gun[i]]
-                    if gun_power[g] > gun_p:
-                        p_gun[i] = g
-
-        # 플레이어 o
-        else:
-            if p_gun[i] == -1:
-                gun_power1 = 0
-            else:
-                gun_power1 = gun_power[p_gun[i]]
-
-            if p_gun[o_idx] == -1:
-                gun_power2 = 0
-            else:
-                gun_power2 = gun_power[p_gun[o_idx]]
-
-
-            if gun_power1 + stat[i] > gun_power2 + stat[o_idx]:
-                winner = i
-                loser = o_idx
-            elif gun_power1 + stat[i] == gun_power2 + stat[o_idx]:
-                if stat[i] > stat[o_idx]:
-                    winner = i
-                    loser = o_idx
-                else:
-                    winner = o_idx
-                    loser = i
-            else:
-                winner = o_idx
-                loser = i
-
-            # 이긴 플레이어의 경우
-            score[winner] += abs((gun_power1 + stat[i]) - (gun_power2 + stat[o_idx]))
-
-            for g in range(len(gun_pos)):
-                if p_pos[winner] == gun_pos[g]:
-                    if gun_power[g] > gun_power[p_gun[winner]]:
-                        p_gun[winner] = g
-
-            # 진 플레이어의 경우
-            p_gun[loser] = -1
-
-            p_d = dir[loser]
-            sx, sy = p_pos[loser]
-            for t_d in range(4):
-                nx, ny = sx + dx[(p_d + t_d) % 4], sy + dy[(p_d + t_d) % 4]
-                p_pos[loser] = (nx, ny)
-                if (0 <= nx < n and 0 <= ny < n) and is_player(loser) == -1:
-                    dir[loser] = (p_d + t_d) % 4
-                    break
-                else:
-                    p_pos[loser] = (sx, sy)
-
-            gun_p = 0
-            for g in range(len(gun_pos)):
-                if p_pos[loser] == gun_pos[g]:
-                    if gun_power[g] > gun_p:
-                        gun_p = gun_power[g]
-                        p_gun[loser] = g
-
-            # 버린 총 줍기
-            if p_gun[winner] == -1:
-                gun_p = 0
-            else:
-                gun_p = gun_power[p_gun[winner]]
-            for g in range(len(gun_pos)):
-                if p_pos[winner] == gun_pos[g]:
-                    if gun_power[g] > gun_p:
-                        gun_p = gun_power[g]
-                        p_gun[winner] = g
-
-for i in range(m):
-    print(score[i], end=" ")
+for point in points:
+    print(point, end=" ")
