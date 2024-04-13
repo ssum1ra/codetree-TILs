@@ -15,9 +15,13 @@ def move_team(i):
     sx, sy = team[i][0]
     for dx, dy in zip(dxs, dys):
         nx, ny = sx + dx, sy + dy
-        if is_inrange(nx, ny) and board[nx][ny] == 4 and (not (nx, ny) in team[i]):
+        if is_inrange(nx, ny) and (nx, ny) == team[i][-1]:
             next_team[0] = (nx, ny)
             break
+        elif is_inrange(nx, ny) and board[nx][ny] == 4 and (not (nx, ny) in team[i]):
+            next_team[0] = (nx, ny)
+            break
+
     for t in range(len(team[i]) - 1):
         next_team[t + 1] = team[i][t]
     team[i] = next_team
@@ -29,40 +33,47 @@ def change_dir(i):
     team[i] = next_team
 
 def throw_ball(t):
-    if 0 < t % (4*n) <= n:
-        x = t - 1
+    tmp = t % (4*n)
+    if 0 < tmp <= n:
+        x = tmp - 1
         for y in range(n):
-            for t in range(m):
-                for i in range(len(team[t])):
-                    if (x, y) == team[t][i]:
-                        change_dir(t)
+            for t_i in range(m):
+                for i in range(len(team[t_i])):
+                    if (x, y) == team[t_i][i]:
+                        change_dir(t_i)
                         return (i+1) ** 2
 
-    elif n < t % (4*n) <= 2*n:
-        y = t - (n + 1)
+    elif n < tmp <= 2*n:
+        y = tmp - (n + 1)
         for x in range(n-1, -1, -1):
-            for t in range(m):
-                for i in range(len(team[t])):
-                    if (x, y) == team[t][i]:
-                        change_dir(t)
+            for t_i in range(m):
+                for i in range(len(team[t_i])):
+                    if (x, y) == team[t_i][i]:
+                        change_dir(t_i)
                         return (i+1) ** 2
 
-    elif 2*n < t % (4*n) <= 3*n:
-        x = n - (t % (2*n))
+    elif 2*n < tmp <= 3*n:
+        if tmp == 3*n:
+            x = 0
+        else:
+            x = n - (tmp % (2*n))
         for y in range(n-1, -1, -1):
-            for t in range(m):
-                for i in range(len(team[t])):
-                    if (x, y) == team[t][i]:
-                        change_dir(t)
+            for t_i in range(m):
+                for i in range(len(team[t_i])):
+                    if (x, y) == team[t_i][i]:
+                        change_dir(t_i)
                         return (i+1) ** 2
 
-    elif 3*n < t % (4*n) <= 4*n:
-        y = n - (t % (3*n))
+    elif 3*n < tmp or tmp == 0:
+        if tmp == 0:
+            y = 0
+        else:
+            y = n - (tmp % (3*n))
         for x in range(n):
-            for t in range(m):
-                for i in range(len(team[t])):
-                    if (x, y) == team[t][i]:
-                        change_dir(t)
+            for t_i in range(m):
+                for i in range(len(team[t_i])):
+                    if (x, y) == team[t_i][i]:
+                        change_dir(t_i)
                         return (i+1) ** 2
 
     return 0
@@ -98,9 +109,11 @@ for i in range(m):
 score = 0
 for t in range(1, k+1):
     #팀 한칸 이동
+
     for i in range(m):
         move_team(i)
-
+    if t == 7:
+        print(team)
     #공 던지기
     score += throw_ball(t)
 
