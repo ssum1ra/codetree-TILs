@@ -38,10 +38,10 @@ def runner_move(i):
         if not (nx == it_x and ny == it_y):
             runner[i] = (nx, ny, r_d)
     else:
-        n_d = (r_d - 2) if r_d > 2 else (r_d + 2)
+        n_d = (r_d - 2) if r_d > 1 else (r_d + 2)
         runner[i] = (r_x, r_y, n_d)
 
-        nx, ny = r_x + dxs[r_d], r_y + dys[r_d]
+        nx, ny = r_x + dxs[n_d], r_y + dys[n_d]
 
         if not (nx == it_x and ny == it_y):
             runner[i] = (nx, ny, n_d)
@@ -58,11 +58,13 @@ def it_move():
         is_cw = False
         finish_cnt = n
         it = (nx, ny, 2, 1)
+        return
 
     if nx == n//2 and ny == n//2:
         is_cw = True
         finish_cnt = 1
         it = (nx, ny, 0, 0)
+        return
 
     if finish_cnt == ncnt:
         if is_cw:
@@ -76,6 +78,7 @@ def it_move():
         ncnt = 0
 
     it = (nx, ny, nd, ncnt)
+    return
 
 def tag():
     cnt = 0
