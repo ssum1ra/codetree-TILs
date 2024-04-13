@@ -89,7 +89,7 @@ for i in range(m):
                     board[nx][ny] = 4
                     sx, sy = nx, ny
                     break
-                if board[nx][ny] == 3:
+                elif board[nx][ny] == 3 and len(team[i]) > 1:
                     team[i].append((nx, ny))
                     board[nx][ny] = 4
                     not_found_end = False
@@ -103,5 +103,6 @@ for t in range(1, k+1):
 
     #공 던지기
     score += throw_ball(t)
+    print(team)
 
 print(score)
