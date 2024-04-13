@@ -112,8 +112,7 @@ for t in range(1, k+1):
 
     for i in range(m):
         move_team(i)
-    if t == 7:
-        print(team)
+
     #공 던지기
     score += throw_ball(t)
 
